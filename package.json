@@ -1,0 +1,10 @@
+{
+  "name": "d3tutorial",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^5.9.2",
+    "express": "^4.17.0"
+  }
+}
