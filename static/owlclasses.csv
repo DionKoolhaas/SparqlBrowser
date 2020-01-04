@@ -1,5 +1,0 @@
-subject,property,object
-<http://lod.onderwijsregistratie.nl/cat/cdm/def/AangebodenVoOpleiding>,<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>,<http://www.w3.org/2002/07/owl#Class>
-<http://lod.onderwijsregistratie.nl/cat/cdm/def/AangebodenVoOpleiding>,<http://www.w3.org/2000/01/rdf-schema#subClassOf>,<http://lod.onderwijsregistratie.nl/cat/cdm/def/AangebodenOpleiding>
-<http://lod.onderwijsregistratie.nl/cat/cdm/def/AangebodenVoOpleiding>,<http://www.w3.org/2000/01/rdf-schema#label>,"AangebodenVoOpleiding"@nl
-<http://lod.onderwijsregistratie.nl/cat/cdm/def/AangebodenVoOpleiding>,http://www.w3.org/2000/01/rdf-schema#comment,"Is een Opleidingseenheid die door een Onderwijsaanbieder aangeboden wordt in het VO, in een bepaalde vorm, al dan niet op een bepaalde Onderwijslocatie."@nl
