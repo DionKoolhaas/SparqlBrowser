@@ -20,7 +20,7 @@ var force = d3.layout.force()
     .charge(-400)
     .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 20; });
 
-d3.json("graph.json", function(error, graph) {
+d3.json("lod-graph.json", function(error, graph) {
   if (error) throw error;
 
   force
@@ -35,7 +35,7 @@ d3.json("graph.json", function(error, graph) {
       .attr("class", "link");
 
   link.append("line")
-      .style("stroke-width", function(d) { return (d.bond * 2 - 1) * 2 + "px"; });
+      .style("stroke-width", function(d) { return "3px"; });
 
   link.filter(function(d) { return d.bond > 1; }).append("line")
       .attr("class", "separator");
@@ -47,13 +47,13 @@ d3.json("graph.json", function(error, graph) {
       .call(force.drag);
 
   node.append("circle")
-      .attr("r", function(d) { return radius(d.size); })
-      .style("fill", function(d) { return color(d.atom); });
+      .attr("r", function(d) { return radius(5); })
+      .style("fill", function(d) { return color(d.source); });
 
   node.append("text")
       .attr("dy", ".35em")
       .attr("text-anchor", "middle")
-      .text(function(d) { return d.atom; });
+      .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); });
 
   function tick() {
     link.selectAll("line")
