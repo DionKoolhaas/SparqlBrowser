@@ -1,4 +1,4 @@
-{
+var graph = {
   "nodes": [
     {"uri": "<http://lod.onderwijsregistratie.nl/cat/cdm/def/AangebodenVoOpleiding>", "bron":"http://lod.onderwijsregistratie.nl"},
     {"uri": "<http://www.w3.org/2002/07/owl#Class>","bron":"http://lod.onderwijsregistratie.nl"},

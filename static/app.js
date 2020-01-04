@@ -3,11 +3,9 @@ var width = 4000,
     height = 2000;
 
 //stop een object in color, en je krijgt een html kleur terug
-var color = d3.scale.category20();
-
-//stop er een getal (x) in, en je krijgt een getal (y) terug die in de buurt komt van sqrt(x) + 6
-var radius = d3.scale.sqrt()
-    .range([0, 6]);
+var color = d3.scaleLinear()
+                .domain([-1, 0, 1])
+                .range(["red", "white", "green"]);
 
 //voeg een svg toe aan de dom
 var svg = d3.select("body").append("svg")
@@ -15,19 +13,10 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 
-var force = d3.layout.force()
-    .size([width, height])
-    .charge(-400)
-    .linkDistance(function(d) { return 40; });
-
-d3.json("lod-graph.json", function(error, graph) {
-  if (error) throw error;
-
-  force
-      .nodes(graph.nodes)
-      .links(graph.links)
-      .on("tick", tick)
-      .start();
+   var force = d3.forceSimulation(graph.nodes)
+       .force("charge", d3.forceManyBody())
+       .force("link", d3.forceLink(graph.links))
+       .force("center", d3.forceCenter());
 
   var link = svg.selectAll(".link")
       .data(graph.links)
@@ -40,11 +29,11 @@ d3.json("lod-graph.json", function(error, graph) {
   var node = svg.selectAll(".node")
       .data(graph.nodes)
     .enter().append("g")
-      .attr("class", "node")
-      .call(force.drag);
+      .attr("class", "node");
+      //.call(force.drag);
 
   node.append("circle")
-      .attr("r", function(d) { return radius(5); })
+      .attr("r", function(d) { return 5; })
       .style("fill", function(d) { return color(d.bron); });
 
   node.append("text")
@@ -61,4 +50,3 @@ d3.json("lod-graph.json", function(error, graph) {
 
     node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
-});
