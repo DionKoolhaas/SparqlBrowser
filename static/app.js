@@ -18,7 +18,7 @@ var svg = d3.select("body").append("svg")
 var force = d3.layout.force()
     .size([width, height])
     .charge(-400)
-    .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 20; });
+    .linkDistance(function(d) { return 40; });
 
 d3.json("lod-graph.json", function(error, graph) {
   if (error) throw error;
@@ -37,9 +37,6 @@ d3.json("lod-graph.json", function(error, graph) {
   link.append("line")
       .style("stroke-width", function(d) { return "3px"; });
 
-  link.filter(function(d) { return d.bond > 1; }).append("line")
-      .attr("class", "separator");
-
   var node = svg.selectAll(".node")
       .data(graph.nodes)
     .enter().append("g")
@@ -48,7 +45,7 @@ d3.json("lod-graph.json", function(error, graph) {
 
   node.append("circle")
       .attr("r", function(d) { return radius(5); })
-      .style("fill", function(d) { return color(d.source); });
+      .style("fill", function(d) { return color(d.bron); });
 
   node.append("text")
       .attr("dy", ".35em")
