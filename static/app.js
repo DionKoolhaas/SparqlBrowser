@@ -1,66 +1,67 @@
 
-$.ajax({
-  headers: {
-    "accept": "application/json"
-  },
-  type: "POST",
-  url: "https://lod.onderwijsregistratie.nl/sparql",
-  data: {
-    "query": "select ?s ?p ?o where { ?s ?p ?o } limit 10"
-  },
-  success: function(data) {
-   console.log(data)
+var width = 4000,
+    height = 2000;
+
+//stop een object in color, en je krijgt een html kleur terug
+var color = d3.scale.category20();
+
+//stop er een getal (x) in, en je krijgt een getal (y) terug die in de buurt komt van sqrt(x) + 6
+var radius = d3.scale.sqrt()
+    .range([0, 6]);
+
+//voeg een svg toe aan de dom
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+
+var force = d3.layout.force()
+    .size([width, height])
+    .charge(-400)
+    .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 20; });
+
+d3.json("graph.json", function(error, graph) {
+  if (error) throw error;
+
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .on("tick", tick)
+      .start();
+
+  var link = svg.selectAll(".link")
+      .data(graph.links)
+    .enter().append("g")
+      .attr("class", "link");
+
+  link.append("line")
+      .style("stroke-width", function(d) { return (d.bond * 2 - 1) * 2 + "px"; });
+
+  link.filter(function(d) { return d.bond > 1; }).append("line")
+      .attr("class", "separator");
+
+  var node = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .call(force.drag);
+
+  node.append("circle")
+      .attr("r", function(d) { return radius(d.size); })
+      .style("fill", function(d) { return color(d.atom); });
+
+  node.append("text")
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .text(function(d) { return d.atom; });
+
+  function tick() {
+    link.selectAll("line")
+        .attr("x1", function(d) { return d.source.x ; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
 });
-
-
-d3.csv("owlclasses.csv").then(function (data){
-    var owlClasses = d3.select("svg")
-    .selectAll("g")
-    .data(data)
-    .enter()
-    .append("g")
-        .attr("class", "owlclasses")
-        .attr("transform", function (d) {
-            d.cx = Math.random(1, 1000) * 1000;
-            d.cy = Math.random(1, 1000) * 1000;
-            return "translate(" + 500 +"," + 500 + ")";
-        })
-    .on("mouseover", function (d) {
-        console.log(d.name);
-        d3.select(this)
-            .append("text")
-            .attr("class", "owlclassname")
-            .text(d.name);
-    });
-
-    owlClasses.on("mouseout", function(d) {
-        d3.select("text.owlclassname").remove();
-    })
-
-    owlClasses.transition()
-        .duration(10000)
-        .attr("transform", function(d) {
-            var a = "translate(" + d.cx +"," + d.cy + ")";
-            return a;
-        });
-
-     owlClasses.append("circle")
-     .attr("r", 10)
-});
-
-var alphabet = "asdfjklqweruiozxcvbnm".split("");
-
-d3.interval(function() {
-    var sampleSize = Math.floor(Math.random()*21);
-    var shuffle = d3.shuffle(alphabet).slice(sampleSize);
-    console.log(shuffle);
-    var selection = d3.select("#arrayOfLetters").selectAll("text").data(shuffle, d => d);
-
-    selection.join(
-    enter => enter.append("text").text(d => d).attr("x", (d, i) => i * 16),
-    update => update.transition().attr("x", (d, i) => i * 16),
-    exit => exit.remove()
-    );
-
-}, 2000);

@@ -1,21 +1,29 @@
-<html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.link line {
+  stroke: #696969;
+}
+
+.link line.separator {
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+.node circle {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+</style>
 <body>
-<h1>My Header</h1>
-
-<div>
-    <table>
-    </table>
-<svg class="container">
-</svg>
-</div>
-
-
-<svg id="arrayOfLetters" width="1231" height="33" viewBox="0 -20 1231 33">
-</svg>
-
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="//d3js.org/d3.v3.min.js"></script>
 <script src="/app.js"></script>
-<link rel="stylesheet" href="/app.css">
 </body>
 </html>
