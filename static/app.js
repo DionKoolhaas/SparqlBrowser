@@ -3,9 +3,7 @@ var width = 600,
     height = 400;
 var nodes = graph.nodes;
 //stop een object in color, en je krijgt een html kleur terug
-var color = d3.scaleLinear()
-                .domain(['a', 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'])
-                .range(["red", "white", "green"]);
+var color = d3.scaleOrdinal(d3.schemeSet1);
 
 
 //voeg een svg toe aan de dom
