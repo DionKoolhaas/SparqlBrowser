@@ -1,7 +1,7 @@
 
-var width = 600,
-    height = 400;
-var nodes = graph.nodes;
+var width = 2000,
+    height = 1000;
+
 //stop een object in color, en je krijgt een html kleur terug
 var color = d3.scaleOrdinal(d3.schemeSet1);
 
@@ -11,19 +11,20 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var simulation = d3.forceSimulation(nodes)
+var simulation = d3.forceSimulation(graph.nodes)
   .force('center', d3.forceCenter(width / 2, height / 2))
-  .force('charge', d3.forceManyBody().strength(-300))
+  .force('charge', d3.forceManyBody().strength(-6000))
   .force('link', d3.forceLink().links(graph.links).distance(200))
   .on('tick', ticked);
 
-function updateNodes() {
-console.log("you are being ticked")
-  var u = svg
-    .selectAll('.node')
-    .data(nodes)
+var links = svg.selectAll('line')
+    .data(graph.links)
+    .enter()
+    .append('line');
 
-  u.enter()
+var nodes = svg
+    .selectAll('.node')
+    .data(graph.nodes).enter()
     .append('g')
     .attr('class', 'node')
     .append('circle')
@@ -33,22 +34,14 @@ console.log("you are being ticked")
                   .on("start", dragstarted)
                   .on("drag", dragged)
                   .on("end", dragended));
-    //.merge(u)
-    //.select('circle')
 
-    u.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-
-
-  u.exit().remove()
+function updateNodes() {
+    nodes.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    nodes.exit().remove()
 }
 
 function updateLinks() {
-  var u = svg.selectAll('line')
-    .data(graph.links)
-
-  u.enter()
-    .append('line')
-    .merge(u)
+   links
     .attr('x1', function(d) {
       return d.source.x
     })
@@ -61,8 +54,7 @@ function updateLinks() {
     .attr('y2', function(d) {
       return d.target.y
     })
-
-  u.exit().remove()
+    links.exit().remove()
 }
 
 function ticked() {

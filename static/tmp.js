@@ -1,70 +1,64 @@
-    var width = window.innerWidth, height = window.innerHeight, sizeDivisor = 100, nodePadding = 2.5;
 
-    var svg = d3.select("body")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", height);
+var width = 4000,
+    height = 2000;
 
-    var color = d3.scaleOrdinal(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"]);
+//stop een object in color, en je krijgt een html kleur terug
+var color = d3.scale.category20();
 
-    var simulation = d3.forceSimulation()
-        .force("forceX", d3.forceX().strength(.1).x(width * .5))
-        .force("forceY", d3.forceY().strength(.1).y(height * .5))
-        .force("center", d3.forceCenter().x(width * .5).y(height * .5))
-        .force("charge", d3.forceManyBody().strength(-15));
+//stop er een getal (x) in, en je krijgt een getal (y) terug die in de buurt komt van sqrt(x) + 6
+var radius = d3.scale.sqrt()
+    .range([0, 6]);
 
-    d3.csv("data.csv", types, function(error,graph){
-      if (error) throw error;
+//voeg een svg toe aan de dom
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-      // sort the nodes so that the bigger ones are at the back
-      graph = graph.sort(function(a,b){ return b.size - a.size; });
 
-      //update the simulation based on the data
-      simulation
-          .nodes(graph)
-          .force("collide", d3.forceCollide().strength(.5).radius(function(d){ return d.radius + nodePadding; }).iterations(1))
-          .on("tick", function(d){
-            node
-                .attr("cx", function(d){ return d.x; })
-                .attr("cy", function(d){ return d.y; })
-          });
+var force = d3.layout.force()
+    .size([width, height])
+    .charge(-400)
+    .linkDistance(function(d) { return 40; });
 
-      var node = svg.append("g")
-          .attr("class", "node")
-        .selectAll("circle")
-        .data(graph)
-        .enter().append("circle")
-          .attr("r", function(d) { return d.radius; })
-          .attr("fill", function(d) { return color(d.continent); })
-          .attr("cx", function(d){ return d.x; })
-          .attr("cy", function(d){ return d.y; })
-          .call(d3.drag()
-              .on("start", dragstarted)
-              .on("drag", dragged)
-              .on("end", dragended));
+d3.json("lod-graph.json", function(error, graph) {
+  if (error) throw error;
 
-    });
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .on("tick", tick)
+      .start();
 
-    function dragstarted(d) {
-      if (!d3.event.active) simulation.alphaTarget(.03).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
+  var link = svg.selectAll(".link")
+      .data(graph.links)
+    .enter().append("g")
+      .attr("class", "link");
 
-    function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
+  link.append("line")
+      .style("stroke-width", function(d) { return "3px"; });
 
-    function dragended(d) {
-      if (!d3.event.active) simulation.alphaTarget(.03);
-      d.fx = null;
-      d.fy = null;
-    }
+  var node = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .call(force.drag);
 
-    function types(d){
-      d.gdp = +d.gdp;
-      d.size = +d.gdp / sizeDivisor;
-      d.size < 3 ? d.radius = 3 : d.radius = d.size;
-      return d;
-    }
+  node.append("circle")
+      .attr("r", function(d) { return radius(5); })
+      .style("fill", function(d) { return color(d.bron); });
+
+  node.append("text")
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); });
+
+  function tick() {
+    link.selectAll("line")
+        .attr("x1", function(d) { return d.source.x ; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  }
+});
