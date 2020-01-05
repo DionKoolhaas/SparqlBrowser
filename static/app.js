@@ -14,7 +14,7 @@ var svg = d3.select("body").append("svg")
 var simulation = d3.forceSimulation(graph.nodes)
   .force('center', d3.forceCenter(width / 2, height / 2))
   .force('charge', d3.forceManyBody().strength(-6000))
-  .force('link', d3.forceLink().links(graph.links).distance(200))
+  .force('link', d3.forceLink().links(graph.links).id(function(d) { return d.uri; }).distance(200))
   .on('tick', ticked);
 
 var links = svg.selectAll('line')
