@@ -26,15 +26,16 @@ var nodes = svg
     .selectAll('.node')
     .data(graph.nodes).enter()
     .append('g')
-    .attr('class', 'node');
-
-  nodes.append('circle')
-    .attr('r', 50)
-    .style('fill', function(d) { return color(d.bron)})
+    .attr('class', 'node')
     .call(d3.drag()
                   .on("start", dragstarted)
                   .on("drag", dragged)
                   .on("end", dragended));
+  nodes.append('circle')
+    .attr('r', 50)
+    .style('fill', function(d) { return color(d.bron)})
+    ;
+
   nodes.append("text")
       .attr("dy", ".35em")
       .attr("text-anchor", "middle")
