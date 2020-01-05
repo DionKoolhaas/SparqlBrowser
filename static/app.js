@@ -13,13 +13,11 @@ var svg = d3.select("body").append("svg")
 
 var simulation = d3.forceSimulation(nodes)
   .force('center', d3.forceCenter(width / 2, height / 2))
-  .force('charge', d3.forceManyBody().strength(4000))
-  .force('collision', d3.forceCollide().radius(function(d) {
-      return 100
-    }))
+  .force('charge', d3.forceManyBody().strength(-300))
+  .force('link', d3.forceLink().links(graph.links).distance(200))
   .on('tick', ticked);
 
-function ticked() {
+function updateNodes() {
 console.log("you are being ticked")
   var u = svg
     .selectAll('.node')
@@ -42,6 +40,34 @@ console.log("you are being ticked")
 
 
   u.exit().remove()
+}
+
+function updateLinks() {
+  var u = svg.selectAll('line')
+    .data(graph.links)
+
+  u.enter()
+    .append('line')
+    .merge(u)
+    .attr('x1', function(d) {
+      return d.source.x
+    })
+    .attr('y1', function(d) {
+      return d.source.y
+    })
+    .attr('x2', function(d) {
+      return d.target.x
+    })
+    .attr('y2', function(d) {
+      return d.target.y
+    })
+
+  u.exit().remove()
+}
+
+function ticked() {
+    updateLinks();
+    updateNodes();
 }
 
 function dragstarted(d) {
