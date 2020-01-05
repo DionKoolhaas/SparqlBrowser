@@ -13,11 +13,9 @@ var svg = d3.select("body").append("svg")
 
 var simulation = d3.forceSimulation(nodes)
   .force('center', d3.forceCenter(width / 2, height / 2))
-  //.force('charge', d3.forceManyBody().strength(4000))
-  .force("forceX", d3.forceX().strength(.1).x(width * .5))
-          .force("forceY", d3.forceY().strength(.1).y(height * .5))
+  .force('charge', d3.forceManyBody().strength(4000))
   .force('collision', d3.forceCollide().radius(function(d) {
-      return 50
+      return 100
     }))
   .on('tick', ticked);
 
