@@ -1,7 +1,7 @@
 
 var width = 2000,
     height = 1000,
-    circleRadius = 10;
+    circleRadius = 8;
 
 //stop een object in color, en je krijgt een html kleur terug
 var color = d3.scaleOrdinal(d3.schemeSet1);
@@ -36,13 +36,17 @@ var links = container.selectAll('.link')
 
 var lines = links.append('line');
 
+var links_triangle = links.append("polygon")
+    .attr("fill", "rgb(34,139,34)")
+    .attr("points", "-4,-4 4,0 -4,4" );
+
 var links_text = links.append('text')
     .style("font-family", "Roboto")
     .attr("text-anchor", "left")
     .attr("fill", "rgb(128,128,128)")
     .attr("font-size", "7")
     .attr("x","15")
-    .attr("y", "0")
+    .attr("y", "10")
     .text(function (d) {return d.property.substr(d.property.lastIndexOf('/') + 1); })
 
 var nodes = container
@@ -83,14 +87,24 @@ function updateLinks() {
     });
     lines.exit().remove();
 
+    links_triangle.attr("transform", function(d) { return "translate(" + (d.target.x - d.source.x) / 2 + ","
+                        + (d.target.y - d.source.y) / 2  + ") "
+                        + "rotate(" + calculateDegreesToRotate(d.source.x, d.target.x, d.source.y, d.target.y ) +")"; });
+    //.attr("x", function(d) { return (d.target.x - d.source.x) / 2 })
+    //.attr("y", function(d) { return (d.target.y - d.source.y) / 2 });
+
     links_text
-    .attr("transform", function(d){
-        var deltaX = d.target.x - d.source.x;
-        var deltaY = d.target.y - d.source.y;
-        var radians_to_rotate = Math.atan2(deltaY, deltaX);
-        var degrees_to_rotate = radians_to_rotate * (180/Math.PI);
-        return "rotate(" + degrees_to_rotate +")";
+    .attr("transform", function(d) {
+        return "rotate(" + calculateDegreesToRotate(d.source.x, d.target.x, d.source.y, d.target.y ) +")";
     });
+}
+
+function calculateDegreesToRotate (x1,x2,y1,y2) {
+    var deltaX = x2 - x1;
+    var deltaY = y2 - y1;
+    var radians_to_rotate = Math.atan2(deltaY, deltaX);
+    var degrees_to_rotate = radians_to_rotate * (180/Math.PI);
+    return degrees_to_rotate;
 }
 
 function ticked() {
