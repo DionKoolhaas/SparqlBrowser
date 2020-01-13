@@ -8,7 +8,7 @@ var color = d3.scaleOrdinal(d3.schemeSet1);
 
 
 //voeg een svg toe aan de dom
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#container").append("svg")
     .attr("width", width)
     .attr("height", height)
     //inzoomen mogelijk maken
@@ -33,7 +33,17 @@ var links = container.selectAll('.link')
     .enter()
     .append('g')
     .attr('class', '.link')
-    .append('line');
+
+var lines = links.append('line');
+
+var links_text = links.append('text')
+    .style("font-family", "Roboto")
+    .attr("text-anchor", "left")
+    .attr("fill", "rgb(128,128,128)")
+    .attr("font-size", "7")
+    .attr("x","15")
+    .attr("y", "0")
+    .text(function (d) {return d.property.substr(d.property.lastIndexOf('/') + 1); })
 
 var nodes = container
     .selectAll('.node')
@@ -63,20 +73,24 @@ function updateNodes() {
 }
 
 function updateLinks() {
-   links
-    .attr('x1', function(d) {
-      return d.source.x
-    })
-    .attr('y1', function(d) {
-      return d.source.y
-    })
+   links.attr("transform", function(d) { return "translate(" + d.source.x + "," + d.source.y + ")"; });
+   lines
     .attr('x2', function(d) {
-      return d.target.x
+      return d.target.x - d.source.x
     })
     .attr('y2', function(d) {
-      return d.target.y
-    })
-    links.exit().remove()
+      return d.target.y - d.source.y
+    });
+    lines.exit().remove();
+
+    links_text
+    .attr("transform", function(d){
+        var deltaX = d.target.x - d.source.x;
+        var deltaY = d.target.y - d.source.y;
+        var radians_to_rotate = Math.atan2(deltaY, deltaX);
+        var degrees_to_rotate = radians_to_rotate * (180/Math.PI);
+        return "rotate(" + degrees_to_rotate +")";
+    });
 }
 
 function ticked() {
