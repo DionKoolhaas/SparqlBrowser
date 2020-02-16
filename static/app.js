@@ -20,13 +20,24 @@ var svg = d3.select("#container").append("svg")
 
 var container = svg.append("g");
 
+var link_force = d3.forceLink().id(function(d) { return d.uri; }).distance(100);
+
 var simulation = d3.forceSimulation(graph.nodes)
   .force('center', d3.forceCenter(width / 2, height / 2))
   .force('charge', d3.forceManyBody().strength(-3000))
-  .force('link', d3.forceLink().links(graph.links).id(function(d) { return d.uri; }).distance(100))
+  .force('link', link_force)
   .force("x", d3.forceX(width / 2).strength(1))
   .force("y", d3.forceY(height / 2).strength(1))
-  .on('tick', ticked);
+  ;
+
+
+function createVisualization() {
+simulation
+  		.nodes(graph.nodes)
+  		.on("tick", ticked);
+
+    	simulation.force("link").links(graph.links);
+
 
 var links = container.selectAll('.link')
     .data(graph.links)
@@ -73,6 +84,8 @@ var nodes = container
       .attr("x", circleRadius)
       .attr("y", -circleRadius)
       .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); });
+
+}
 
 function updateNodes() {
     container
