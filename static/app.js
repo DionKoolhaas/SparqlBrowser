@@ -32,13 +32,15 @@ var links = container.selectAll('.link')
     .data(graph.links)
     .enter()
     .append('g')
-    .attr('class', '.link')
+    .attr('class', 'link')
 
-var lines = links.append('line');
+var lines = links.append('line')
+    .attr('class', 'line');
 
 var links_triangle = links.append("polygon")
     .attr("fill", "rgb(34,139,34)")
-    .attr("points", "-4,-4 4,0 -4,4" );
+    .attr("points", "-4,-4 4,0 -4,4" )
+    .attr("class", "links_triangle");
 
 var links_text = links.append('text')
     .style("font-family", "Roboto")
@@ -47,6 +49,7 @@ var links_text = links.append('text')
     .attr("font-size", "7")
     .attr("x","15")
     .attr("y", "10")
+    .attr("class", "links_text")
     .text(function (d) {return d.property.substr(d.property.lastIndexOf('/') + 1); })
 
 var nodes = container
