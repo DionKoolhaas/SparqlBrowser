@@ -75,31 +75,39 @@ var nodes = container
       .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); });
 
 function updateNodes() {
-    nodes.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-    nodes.exit().remove()
+    container
+        .selectAll('.node').attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    container
+        .selectAll('.node').exit().remove()
 }
 
 function updateLinks() {
-   links.attr("transform", function(d) { return "translate(" + d.source.x + "," + d.source.y + ")"; });
-   lines
+   container
+       .selectAll('.link').attr("transform", function(d) { return "translate(" + d.source.x + "," + d.source.y + ")"; });
+   container
+       .selectAll('.line')
     .attr('x2', function(d) {
       return d.target.x - d.source.x
     })
     .attr('y2', function(d) {
       return d.target.y - d.source.y
     });
-    lines.exit().remove();
+    container
+           .selectAll('.line').exit().remove();
 
-    links_triangle.attr("transform", function(d) { return "translate(" + (d.target.x - d.source.x) / 2 + ","
+    container
+           .selectAll('.links_triangle')
+           .attr("transform", function(d) { return "translate(" + (d.target.x - d.source.x) / 2 + ","
                         + (d.target.y - d.source.y) / 2  + ") "
                         + "rotate(" + calculateDegreesToRotate(d.source.x, d.target.x, d.source.y, d.target.y ) +")"; });
     //.attr("x", function(d) { return (d.target.x - d.source.x) / 2 })
     //.attr("y", function(d) { return (d.target.y - d.source.y) / 2 });
 
-    links_text
-    .attr("transform", function(d) {
-        return "rotate(" + calculateDegreesToRotate(d.source.x, d.target.x, d.source.y, d.target.y ) +")";
-    });
+    container
+        .selectAll('.links_text')
+        .attr("transform", function(d) {
+            return "rotate(" + calculateDegreesToRotate(d.source.x, d.target.x, d.source.y, d.target.y ) +")";
+        });
 }
 
 function calculateDegreesToRotate (x1,x2,y1,y2) {
