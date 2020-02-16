@@ -19,6 +19,9 @@ var svg = d3.select("#container").append("svg")
     );
 
 var container = svg.append("g");
+//we want nodes to be on top of links, so nodes need to at the end in the svg
+var container_links = container.append("g");
+var container_nodes = container.append("g");
 
 var link_force = d3.forceLink().id(function(d) { return d.uri; }).distance(100);
 
@@ -32,14 +35,15 @@ var simulation = d3.forceSimulation(graph.nodes)
 
 
 function createVisualization() {
+//add possible new nodes to the forces
 simulation
-  		.nodes(graph.nodes)
-  		.on("tick", ticked);
+    .nodes(graph.nodes)
+    .on("tick", ticked);
 
-    	simulation.force("link").links(graph.links);
+simulation.force("link").links(graph.links);
 
 
-var links = container.selectAll('.link')
+var links = container_links.selectAll('.link')
     .data(graph.links)
     .enter()
     .append('g')
@@ -63,7 +67,7 @@ var links_text = links.append('text')
     .attr("class", "links_text")
     .text(function (d) {return d.property.substr(d.property.lastIndexOf('/') + 1); })
 
-var nodes = container
+var nodes = container_nodes
     .selectAll('.node')
     .data(graph.nodes).enter()
     .append('g')
