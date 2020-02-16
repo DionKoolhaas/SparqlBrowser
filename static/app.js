@@ -1,3 +1,4 @@
+var currentSparqlEndpoint = "http://dbpedia.org/sparql";
 
 var width = 2000,
     height = 1000,
@@ -65,6 +66,9 @@ var links_text = links.append('text')
     .attr("y", "10")
     .attr("class", "links_text")
     .text(function (d) {return d.property.substr(d.property.lastIndexOf('/') + 1); })
+    .on("click", function(d) {
+                window.open(d.property)
+            });
 
 var nodes = container_nodes
     .selectAll('.node')
@@ -74,7 +78,10 @@ var nodes = container_nodes
     .call(d3.drag()
                   .on("start", dragstarted)
                   .on("drag", dragged)
-                  .on("end", dragended));
+                  .on("end", dragended))
+    .on("click", function(d) {
+        getDataFromSource(d.uri, currentSparqlEndpoint)
+    });
   nodes.append('circle')
     .attr('r', circleRadius)
     .style('fill', function(d) { return color(d.bron)})
@@ -86,7 +93,11 @@ var nodes = container_nodes
       //tekst rechtsboven van circel plaatsen
       .attr("x", circleRadius)
       .attr("y", -circleRadius)
-      .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); });
+      .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); })
+      .on("click", function(d) {
+            //TODO: link openen werkt wel bij de properties, maar niet bij de subjecten
+            window.open(d.uri)
+        });
 
 }
 
