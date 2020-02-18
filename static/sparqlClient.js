@@ -10,6 +10,18 @@ function getUrisFromLabel(label, source, successCallback) {
     queryDatabase(query, source, successCallback);
 }
 
+function getRelationsBetweenURI(uri1,uri2, source, successCallback) {
+var query = "prefix :<http://anyuri.com>" +
+    "SELECT * {"+
+    "{<"+uri1+"> ?property1 <"+uri2+">}"+
+    "UNION"+
+    "{	<"+uri2+"> ?property1Reverse <"+uri1+">}"+
+    "}"+
+    "limit 100"+
+    "}";
+    queryDatabase(query, source, successCallback);
+}
+
 function addDataToVisualization(subjectUri, source, data) {
 if (data.results.bindings.length > 0) {
     addNodeIfNotExists(subjectUri, source);
@@ -44,12 +56,11 @@ function addNodeIfNotExists(subjectUri, source) {
     }
 }
 
-createVisualization();
 function findData() {
 
     source = $("#sparqlEndpoint").val();
     var label = $("#labelInputField").val();
-    getUrisFromLabel(label, currentSparqlEndpoint, function(data){
+    getUrisFromLabel(label, source, function(data) {
         data.results.bindings.forEach(function(triple){
             getDataFromSource(triple.subject.value, source);
         })

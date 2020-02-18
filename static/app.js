@@ -1,4 +1,4 @@
-var currentSparqlEndpoint = "http://dbpedia.org/sparql";
+var source = "http://dbpedia.org/sparql";
 
 var width = 2000,
     height = 1000,
