@@ -17,8 +17,7 @@ var query = "prefix :<http://anyuri.com>" +
     "UNION"+
     "{	<"+uri2+"> ?property1Reverse <"+uri1+">}"+
     "}"+
-    "limit 100"+
-    "}";
+    "limit 10";
     queryDatabase(query, source, successCallback);
 }
 
@@ -34,11 +33,7 @@ data.results.bindings.forEach(function(triple){
     });
     if (link != null) {
     } else {
-        graph.links.push({
-            "source": subjectUri,
-            "target": triple.object.value,
-            "property": triple.property.value
-        })
+        addLink(subjectUri, triple.object.value, triple.property.value);
     }
 
 } );
@@ -67,8 +62,33 @@ function findData() {
         });
 }
 
-function findRelationsBetween2Labels(){
+function compareUris(){
+    source = $("#sparqlEndpoint").val();
+    uri1 = $("#uri1").val();
+    uri2 = $("#uri2").val();
+    getRelationsBetweenURI(uri1,uri2, source, function(data) {
+        if (data.results.bindings.length > 0) {
+            addNodeIfNotExists(uri1, source);
+            addNodeIfNotExists(uri2, source);
+            data.results.bindings.forEach(function(triple){
+                if(triple.property1 != undefined) {
+                    addLink(uri1, uri2, triple.property1.value);
+                } else {
+                    addLink(uri2, uri1, triple.property1Reverse.value);
+                }
+             });
+             createVisualization();
+        }
+    });
+    
+}
 
+function addLink(source, target, property) {
+    graph.links.push({
+        "source": source,
+        "target": target,
+        "property": property
+    })
 }
 
 function queryDatabase(query, source, successCallback) {

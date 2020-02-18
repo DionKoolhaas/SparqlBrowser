@@ -20,14 +20,19 @@ line {
 
 </style>
 <body>
-<h1>Welcome</h1>
-<p>Sparql endpoint</p>
-<input type="text" id="sparqlEndpoint" name="sparqlEndpoint" value="http://dbpedia.org/sparql"/>
-<p>Label</p>
-<input type="text" id="labelInputField" name="find label"/>
-<button onclick="findData()">Find data</button>
-<div id=container>
-</div>
+    <h1>Welcome</h1>
+    <p>Sparql endpoint</p>
+    <input type="text" id="sparqlEndpoint" name="sparqlEndpoint" value="http://dbpedia.org/sparql"/>
+    <p>Find label</p>
+    <input type="text" id="labelInputField" name="find label"/>
+    <button onclick="findData()">Find data</button>
+    <br/>
+    <p>compare 2 uris</p>
+    <input type="text" id="uri1" name="uri"/>
+    <input type="text" id="uri2" name="uri"/>
+    <button onclick="compareUris()">Compare</button>
+    <div id=container>
+    </div>
 <script type="text/javascript" src="http://d3js.org/d3.v5.min.js"></script>
 <script
         src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
