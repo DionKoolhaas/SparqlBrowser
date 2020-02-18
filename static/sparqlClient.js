@@ -1,21 +1,14 @@
 function getDataFromSource(subjectUri, source) {
-$.ajax({
-    data: { "query" :"SELECT * WHERE { <"+ subjectUri +"> ?property ?object } limit 10"},
-    //dataType: 'json',
-    headers: {
-        "Accept": "application/json"
-    },
-    success: function(data){
+    var query = "SELECT * WHERE { <"+ subjectUri +"> ?property ?object } limit 10";
+    queryDatabase(query, source, function(data){
         addDataToVisualization(subjectUri, source, data)
-    },
-    error: function(){
-        alert('Could not connect to database')
-    },
-    type: 'POST',
-    url: source
-});
+    });
 }
 
+function getUrisFromLabel(label, source, successCallback) {
+    var query = 'SELECT ?subject WHERE {?subject <http://www.w3.org/2000/01/rdf-schema#label> "'+ label +'"@nl} limit 10';
+    queryDatabase(query, source, successCallback);
+}
 
 function addDataToVisualization(subjectUri, source, data) {
 if (data.results.bindings.length > 0) {
@@ -51,19 +44,30 @@ function addNodeIfNotExists(subjectUri, source) {
     }
 }
 
-function getUrisFromLabel(label, source) {
-$.ajax({
-    data: { "query" :'SELECT ?subject WHERE {?subject <http://www.w3.org/2000/01/rdf-schema#label> "'+ label +'"@nl} limit 10'},
+createVisualization();
+function findData() {
+
+    source = $("#sparqlEndpoint").val();
+    var label = $("#labelInputField").val();
+    getUrisFromLabel(label, currentSparqlEndpoint, function(data){
+        data.results.bindings.forEach(function(triple){
+            getDataFromSource(triple.subject.value, source);
+        })
+        });
+}
+
+function findRelationsBetween2Labels(){
+
+}
+
+function queryDatabase(query, source, successCallback) {
+  $.ajax({
+    data: { "query" : query},
     //dataType: 'json',
     headers: {
         "Accept": "application/json"
     },
-    success: function(data){
-        data.results.bindings.forEach(function(triple){
-            getDataFromSource(triple.subject.value, source);
-        });
-
-    },
+    success: successCallback,
     error: function(error){
         alert('Could not connect to database')
     },
@@ -71,12 +75,3 @@ $.ajax({
     url: source
 });
 }
-
-createVisualization();
-function findData() {
-
-    currentSparqlEndpoint = $("#sparqlEndpoint").val();
-    var label = $("#labelInputField").val();
-    getUrisFromLabel(label, currentSparqlEndpoint)
-}
-//getUrisFromLabel("Johan Derksen", currentSparqlEndpoint);
