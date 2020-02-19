@@ -22,7 +22,7 @@ function getUrisFromLabel(label, source, successCallback) {
 }
 
 function getDirectRelationsBetweenURI(uri1, uri2, source, successCallback) {
-var query = "prefix :<http://anyuri.com>" +
+    var query = "prefix :<http://anyuri.com>" +
     "SELECT * {"+
     "{<"+uri1+"> ?property1 <"+uri2+">}"+
     "UNION"+
@@ -36,12 +36,71 @@ var query = "prefix :<http://anyuri.com>" +
             if(triple.property1 != undefined) {
                 addTripleToArray(rdfData, uri1, triple.property1.value, uri2);
             } else {
-                addTripleToArray(rdfData, uri2, triple.property1.value, uri);
+                addTripleToArray(rdfData, uri2, triple.property1Reverse.value, uri1);
             }
         });
         successCallback(rdfData);
     });
 }
+//#uri1 ?node uri2, + properties
+function getRelationPath1Node(uri1, uri2, source, successCallback) {
+    var query = "prefix :<http://anyuri.com>" +
+    "SELECT * {" +
+    "{<"+uri1+"> ?property1 ?node.}" +
+    "UNION" +
+    "{?node ?property1Reverse <"+uri1+">}" +
+    "{<"+uri2+"> ?property2 ?node.}" +
+    "UNION" +
+    "{?node ?property2Reverse <"+uri2+">}" +
+    "FILTER(!isLiteral(?node))" +
+    "}"+
+    "limit 3";
+    queryDatabase(query, source, function (data) {
+        //convert resultset to RDF array (subject, property, Object)
+        var rdfData = [];
+        data.results.bindings.forEach(function(triple) {
+
+            if(triple.property1 != undefined) {
+                addTripleToArray(rdfData, uri1, triple.property1.value, triple.node.value);
+            } else {
+                addTripleToArray(rdfData, triple.node.value, triple.property1Reverse.value, uri1);
+            }
+
+            if(triple.property2 != undefined) {
+                addTripleToArray(rdfData, uri2, triple.property2.value, triple.node.value);
+            } else {
+                addTripleToArray(rdfData, triple.node.value, triple.property2Reverse.value, uri2);
+            }
+        });
+        successCallback(rdfData);
+    });
+}
+
+function getRelationPath2Node(uri1, uri2, source, successCallback) {
+    var query = "prefix :<http://anyuri.com>" +
+    "SELECT DISTINCT ?node " +
+    "{" +
+    "<"+uri1+"> (^!:|!:)/(^!:|!:) ?node." +
+    "<"+uri2+"> (^!:|!:) ?node." +
+    "}" +
+    "limit 3";
+    queryDatabase(query, source, function (data) {
+        //convert resultset to RDF array (subject, property, Object)
+        var rdfData = [];
+        data.results.bindings.forEach(function(triple) {
+            getRelationPath1Node(uri1, triple.node.value, source, successCallback);
+            getDirectRelationsBetweenURI(uri2, triple.node.value, source, successCallback)
+        });
+    })
+}
+
+function getRelationPath(uri1, uri2, source, successCallback) {
+    getDirectRelationsBetweenURI(uri1, uri2, source, successCallback);
+    getRelationPath1Node(uri1, uri2, source, successCallback);
+    getRelationPath2Node(uri1, uri2, source, successCallback);
+    getRelationPath2Node(uri2, uri1, source, successCallback);
+}
+
 
 function addTripleToArray(rdfData, subject, property, object) {
     rdfData.push({

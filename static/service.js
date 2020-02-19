@@ -25,7 +25,7 @@ function compareUris(){
     source = $("#sparqlEndpoint").val();
     uri1 = $("#uri1").val();
     uri2 = $("#uri2").val();
-    getDirectRelationsBetweenURI(uri1,uri2, source, function(rdfData) {
+    getRelationPath(uri1,uri2, source, function(rdfData) {
         if (rdfData.length > 0) {
             //there are relations found between both nodes, so there is a reason to visualize them
             rdfData.forEach(function(triple){
