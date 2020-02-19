@@ -1,7 +1,11 @@
-function getDataFromSource(subjectUri, source) {
+function getDataFromSource(subjectUri, source, successCallback) {
     var query = "SELECT * WHERE { <"+ subjectUri +"> ?property ?object } limit 10";
-    queryDatabase(query, source, function(data){
-        addDataToVisualization(subjectUri, source, data)
+    queryDatabase(query, source, function(data) {
+        var rdfData = [];
+        data.results.bindings.forEach(function(triple) {
+            addTripleToArray(rdfData, subjectUri, triple.property.value, triple.object.value)
+        });
+        successCallback(rdfData);
     });
 }
 
@@ -15,7 +19,6 @@ function getUrisFromLabel(label, source, successCallback) {
         });
         successCallback(rdfData);
     });
-
 }
 
 function getDirectRelationsBetweenURI(uri1, uri2, source, successCallback) {
@@ -46,74 +49,6 @@ function addTripleToArray(rdfData, subject, property, object) {
         "property": property,
         "object": object
     });
-}
-
-function addDataToVisualization(subjectUri, source, data) {
-if (data.results.bindings.length > 0) {
-    addNodeIfNotExists(subjectUri, source);
-}
-data.results.bindings.forEach(function(triple){
-    addNodeIfNotExists(triple.object.value, source);
-
-    var link = graph.links.find(function(d) {
-        return d.source == subjectUri && d.target == triple.object.value && d.property == triple.property.value;
-    });
-    if (link != null) {
-    } else {
-        addLink(subjectUri, triple.property.value, triple.object.value);
-    }
-
-} );
-createVisualization();
-}
-
-function addNodeIfNotExists(subjectUri, source) {
-    var node = graph.nodes.find(function(d) { return d.uri == subjectUri})
-    if (node != null) {
-    } else {
-        graph.nodes.push({
-            "uri": subjectUri,
-            "bron": source
-        })
-    }
-}
-
-function findData() {
-
-    source = $("#sparqlEndpoint").val();
-    var label = $("#labelInputField").val();
-    getUrisFromLabel(label, source, function(rdfData) {
-        rdfData.forEach(function(triple){
-            getDataFromSource(triple.subject, source);
-        })
-    });
-}
-
-function compareUris(){
-    source = $("#sparqlEndpoint").val();
-    uri1 = $("#uri1").val();
-    uri2 = $("#uri2").val();
-    getDirectRelationsBetweenURI(uri1,uri2, source, function(rdfData) {
-        if (rdfData.length > 0) {
-            //there are relations found between both nodes, so there is a reason to visualize them
-            addNodeIfNotExists(uri1, source);
-            addNodeIfNotExists(uri2, source);
-            console.log(rdfData);
-            rdfData.forEach(function(triple){
-                addLink(triple.subject, triple.property, triple.object);
-             });
-             createVisualization();
-        }
-    });
-
-}
-
-function addLink(subject, property, object) {
-    graph.links.push({
-        "source": subject,
-        "target": object,
-        "property": property
-    })
 }
 
 function queryDatabase(query, source, successCallback) {
