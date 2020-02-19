@@ -7,10 +7,18 @@ function getDataFromSource(subjectUri, source) {
 
 function getUrisFromLabel(label, source, successCallback) {
     var query = 'SELECT ?subject WHERE {?subject <http://www.w3.org/2000/01/rdf-schema#label> "'+ label +'"@nl} limit 10';
-    queryDatabase(query, source, successCallback);
+    queryDatabase(query, source, function (data) {
+        //convert resultset to RDF array (subject, property, Object)
+        var rdfData = [];
+        data.results.bindings.forEach(function(triple){
+            addTripleToArray(rdfData, triple.subject.value, "http://www.w3.org/2000/01/rdf-schema#label", label);
+        });
+        successCallback(rdfData);
+    });
+
 }
 
-function getRelationsBetweenURI(uri1,uri2, source, successCallback) {
+function getDirectRelationsBetweenURI(uri1, uri2, source, successCallback) {
 var query = "prefix :<http://anyuri.com>" +
     "SELECT * {"+
     "{<"+uri1+"> ?property1 <"+uri2+">}"+
@@ -18,7 +26,26 @@ var query = "prefix :<http://anyuri.com>" +
     "{	<"+uri2+"> ?property1Reverse <"+uri1+">}"+
     "}"+
     "limit 10";
-    queryDatabase(query, source, successCallback);
+    queryDatabase(query, source, function (data) {
+        //convert resultset to RDF array (subject, property, Object)
+        var rdfData = [];
+        data.results.bindings.forEach(function(triple) {
+            if(triple.property1 != undefined) {
+                addTripleToArray(rdfData, uri1, triple.property1.value, uri2);
+            } else {
+                addTripleToArray(rdfData, uri2, triple.property1.value, uri);
+            }
+        });
+        successCallback(rdfData);
+    });
+}
+
+function addTripleToArray(rdfData, subject, property, object) {
+    rdfData.push({
+        "subject" : subject,
+        "property": property,
+        "object": object
+    });
 }
 
 function addDataToVisualization(subjectUri, source, data) {
@@ -33,7 +60,7 @@ data.results.bindings.forEach(function(triple){
     });
     if (link != null) {
     } else {
-        addLink(subjectUri, triple.object.value, triple.property.value);
+        addLink(subjectUri, triple.property.value, triple.object.value);
     }
 
 } );
@@ -55,38 +82,36 @@ function findData() {
 
     source = $("#sparqlEndpoint").val();
     var label = $("#labelInputField").val();
-    getUrisFromLabel(label, source, function(data) {
-        data.results.bindings.forEach(function(triple){
-            getDataFromSource(triple.subject.value, source);
+    getUrisFromLabel(label, source, function(rdfData) {
+        rdfData.forEach(function(triple){
+            getDataFromSource(triple.subject, source);
         })
-        });
+    });
 }
 
 function compareUris(){
     source = $("#sparqlEndpoint").val();
     uri1 = $("#uri1").val();
     uri2 = $("#uri2").val();
-    getRelationsBetweenURI(uri1,uri2, source, function(data) {
-        if (data.results.bindings.length > 0) {
+    getDirectRelationsBetweenURI(uri1,uri2, source, function(rdfData) {
+        if (rdfData.length > 0) {
+            //there are relations found between both nodes, so there is a reason to visualize them
             addNodeIfNotExists(uri1, source);
             addNodeIfNotExists(uri2, source);
-            data.results.bindings.forEach(function(triple){
-                if(triple.property1 != undefined) {
-                    addLink(uri1, uri2, triple.property1.value);
-                } else {
-                    addLink(uri2, uri1, triple.property1Reverse.value);
-                }
+            console.log(rdfData);
+            rdfData.forEach(function(triple){
+                addLink(triple.subject, triple.property, triple.object);
              });
              createVisualization();
         }
     });
-    
+
 }
 
-function addLink(source, target, property) {
+function addLink(subject, property, object) {
     graph.links.push({
-        "source": source,
-        "target": target,
+        "source": subject,
+        "target": object,
         "property": property
     })
 }
