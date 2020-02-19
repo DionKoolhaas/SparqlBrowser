@@ -15,11 +15,44 @@ function findData() {
 function addRdfDataToVisualizationFunction(source) {
     return function(rdfData) {
         rdfData.forEach(function(triple) {
-            addNodeIfNotExists(triple.subject, source);
-            addNodeIfNotExists(triple.object, source);
-            addLink(triple.subject, triple.property, triple.object);
+            addTripleToGraphIfNotExists(triple, source);
         });
         createVisualization();
+    }
+}
+
+function compareUris(){
+    source = $("#sparqlEndpoint").val();
+    uri1 = $("#uri1").val();
+    uri2 = $("#uri2").val();
+    getDirectRelationsBetweenURI(uri1,uri2, source, function(rdfData) {
+        if (rdfData.length > 0) {
+            //there are relations found between both nodes, so there is a reason to visualize them
+            rdfData.forEach(function(triple){
+                addTripleToGraphIfNotExists(triple, source);
+             });
+             createVisualization();
+        }
+    });
+
+}
+
+function addTripleToGraphIfNotExists(triple, source) {
+    addNodeIfNotExists(triple.subject, source);
+    addNodeIfNotExists(triple.object, source);
+    addLinkIfNotExists(triple);
+}
+
+function addLinkIfNotExists(triple) {
+    var link = graph.links.find(function(d) {
+        return d.source.uri == triple.subject && d.property == triple.property && d.target.uri == triple.object;
+        });
+    if (link == null) {
+        graph.links.push({
+            "source": triple.subject,
+            "target": triple.object,
+            "property": triple.property
+        });
     }
 }
 
@@ -32,30 +65,4 @@ function addNodeIfNotExists(subjectUri, source) {
             "bron": source
         })
     }
-}
-
-function compareUris(){
-    source = $("#sparqlEndpoint").val();
-    uri1 = $("#uri1").val();
-    uri2 = $("#uri2").val();
-    getDirectRelationsBetweenURI(uri1,uri2, source, function(rdfData) {
-        if (rdfData.length > 0) {
-            //there are relations found between both nodes, so there is a reason to visualize them
-            addNodeIfNotExists(uri1, source);
-            addNodeIfNotExists(uri2, source);
-            rdfData.forEach(function(triple){
-                addLink(triple.subject, triple.property, triple.object);
-             });
-             createVisualization();
-        }
-    });
-
-}
-
-function addLink(subject, property, object) {
-    graph.links.push({
-        "source": subject,
-        "target": object,
-        "property": property
-    })
 }
