@@ -112,7 +112,12 @@ function addTripleToArray(rdfData, subject, property, object) {
 
 function queryDatabase(query, source, successCallback) {
   $.ajax({
-    data: { "query" : query},
+    data: {
+        "action": "exec",
+        "queryLn": "SPARQL",
+         "ref": "text",
+        "query" : query
+    },
     //dataType: 'json',
     headers: {
         "Accept": "application/json"
