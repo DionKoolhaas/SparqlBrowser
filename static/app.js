@@ -1,4 +1,4 @@
-var source = "http://dbpedia.org/sparql";
+var source = "http://localhost:8080/rdf4j-workbench/repositories/rio/query";
 
 var width = 2000,
     height = 1000,
@@ -93,7 +93,13 @@ var nodes = container_nodes
       //tekst rechtsboven van circel plaatsen
       .attr("x", circleRadius)
       .attr("y", -circleRadius)
-      .text(function(d) { return d.uri.substr(d.uri.lastIndexOf('/') + 1); })
+      .text(function(d) {
+        if (d.label == null) {
+            return d.uri.substr(d.uri.lastIndexOf('/') + 1);
+        } else {
+            return d.label;
+        }
+      })
       .on("click", function(d) {
             //TODO: link openen werkt wel bij de properties, maar niet bij de subjecten
             window.open(d.uri)

@@ -1,6 +1,6 @@
 var graph = {
   "nodes": [
-  //{"uri": ... , "bron": ...},
+  //{"uri": ... , "bron": ..., label:....},
   ],
   "links": [
   //{"source": ... , "target": ... , "property" : ... },

@@ -39,30 +39,53 @@ function compareUris(){
 
 function addTripleToGraphIfNotExists(triple, source) {
     addNodeIfNotExists(triple.subject, source);
-    addNodeIfNotExists(triple.object, source);
-    addLinkIfNotExists(triple);
+    addLinkIfNotExists(triple, source);
 }
 
-function addLinkIfNotExists(triple) {
-    var link = graph.links.find(function(d) {
-        return d.source.uri == triple.subject && d.property == triple.property && d.target.uri == triple.object;
-        });
+function addLinkIfNotExists(triple, source) {
+    var link = findLink(triple);
     if (link == null) {
-        graph.links.push({
-            "source": triple.subject,
-            "target": triple.object,
-            "property": triple.property
-        });
+        if (triple.property == "http://www.w3.org/2000/01/rdf-schema#label") {
+            var node = addNodeIfNotExists(triple.subject);
+            node.label = triple.object;
+            return null;
+        } else if (triple.property == "http://www.w3.org/2000/01/rdf-schema#comment") {
+            var node = addNodeIfNotExists(triple.subject);
+            node.comment = triple.object;
+            return null;
+        } else {
+            addNodeIfNotExists(triple.object, source);
+            var link = {
+                "source": triple.subject,
+                "target": triple.object,
+                "property": triple.property
+            };
+            graph.links.push(link);
+        }
     }
+    return link;
 }
 
 function addNodeIfNotExists(subjectUri, source) {
-    var node = graph.nodes.find(function(d) { return d.uri == subjectUri})
+    var node = findNode(subjectUri)
     if (node != null) {
+        return node;
     } else {
-        graph.nodes.push({
+        node = {
             "uri": subjectUri,
             "bron": source
-        })
+        };
+        graph.nodes.push(node)
     }
+    return node;
+}
+
+function findNode(uri) {
+    return graph.nodes.find(function(d) { return d.uri == uri});
+}
+
+function findLink(triple) {
+    return graph.links.find(function(d) {
+        return d.source.uri == triple.subject && d.property == triple.property && d.target.uri == triple.object;
+    });
 }

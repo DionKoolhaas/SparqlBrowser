@@ -3,3 +3,4 @@ node_modules
 package.json
 package-lock.json
 SparqlBrowser.iml
+static/d3.js
