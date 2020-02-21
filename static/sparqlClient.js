@@ -9,6 +9,17 @@ function getDataFromSource(subjectUri, source, successCallback) {
     });
 }
 
+function getSubjectsReferringToObject(objecttUri, source, successCallback) {
+    var query = "SELECT * WHERE { ?subject ?property <"+ objecttUri +">  } limit 10";
+    queryDatabase(query, source, function(data) {
+        var rdfData = [];
+        data.results.bindings.forEach(function(triple) {
+            addTripleToArray(rdfData, triple.subject.value, triple.property.value, objecttUri);
+        });
+        successCallback(rdfData);
+    });
+}
+
 function getUrisFromLabel(label, source, successCallback) {
     var query = 'SELECT ?subject WHERE {?subject <http://www.w3.org/2000/01/rdf-schema#label> "'+ label +'"@nl} limit 10';
     queryDatabase(query, source, function (data) {

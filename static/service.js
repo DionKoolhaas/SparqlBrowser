@@ -1,13 +1,18 @@
-function clickNodeEvent(uri, source) {
-    getDataFromSource(uri, source, addRdfDataToVisualizationFunction(source));
+function clickNodeEvent(node, source) {
+    $("#currentNodeUri").text("uri: " + node.uri);
+    $("#currentNodeLabel").text("label: " + node.label);
+    $("#currentNodeComment").text("comment: " +  node.comment);
+    getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
+    getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
 }
 
 function findData() {
     source = $("#sparqlEndpoint").val();
     var label = $("#labelInputField").val();
     getUrisFromLabel(label, source, function(rdfData) {
-        rdfData.forEach(function(triple){
+        rdfData.forEach(function(triple) {
             getDataFromSource(triple.subject, source, addRdfDataToVisualizationFunction(source));
+            getSubjectsReferringToObject(triple.subject, source, addRdfDataToVisualizationFunction(source));
         })
     });
 }

@@ -80,7 +80,7 @@ var nodes = container_nodes
                   .on("drag", dragged)
                   .on("end", dragended))
     .on("click", function(d) {
-        clickNodeEvent(d.uri, source)
+        clickNodeEvent(d, source)
     });
   nodes.append('circle')
     .attr('r', circleRadius)
