@@ -68,7 +68,7 @@ var links_text = links.append('text')
     .attr("x","15")
     .attr("y", "10")
     .attr("class", "links_text")
-    .text(function (d) {return d.property.substr(d.property.lastIndexOf('/') + 1); })
+    .text(function (d) {return getTextFromUri(d.property) })
     .on("click", function(d) {
                 window.open(d.property)
             });
@@ -98,7 +98,7 @@ var nodes = container_nodes
       .attr("y", -circleRadius)
       .text(function(d) {
         if (d.label == null) {
-            return d.uri.substr(d.uri.lastIndexOf('/') + 1);
+            return getTextFromUri(d.uri) ;
         } else {
             return d.label;
         }
@@ -108,6 +108,7 @@ var nodes = container_nodes
             window.open(d.uri)
         });
 
+    restartSimulation();
 }
 
 function updateNodes() {
@@ -155,7 +156,6 @@ function calculateDegreesToRotate (x1,x2,y1,y2) {
 }
 
 function ticked() {
-    console.log(simulation.alpha())
     updateLinks();
     updateNodes();
 }
@@ -178,10 +178,15 @@ function dragended(d) {
 }
 
 function restartSimulation() {
-  if (!d3.event.active) {
+  if (d3.event == null || !d3.event.active) {
     simulation
     .alphaTarget(.01)
     .alpha(0.03)
     .restart();
   }
+}
+
+function getTextFromUri(uri) {
+    var charStart = uri.lastIndexOf('/') + 1;
+    return uri.substr(charStart, charStart + 20)
 }
