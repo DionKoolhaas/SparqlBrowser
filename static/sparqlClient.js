@@ -135,7 +135,8 @@ function queryDatabase(query, source, successCallback) {
     },
     success: successCallback,
     error: function(error){
-        alert('Could not connect to database')
+        console.log('Could not connect to database')
+        console.log(error)
     },
     type: 'POST',
     url: source

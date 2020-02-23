@@ -1,5 +1,5 @@
 var source = "http://localhost:8080/rdf4j-workbench/repositories/rio/query";
-
+//https://data.pdok.nl/sparql
 var width = 2000,
     height = 1000,
     circleRadius = 8;
@@ -31,7 +31,10 @@ var simulation = d3.forceSimulation(graph.nodes)
   .force('charge', d3.forceManyBody().strength(-3000))
   .force('link', link_force)
   .force("x", d3.forceX(width / 2).strength(1))
-  .force("y", d3.forceY(height / 2).strength(1));
+  .force("y", d3.forceY(height / 2).strength(1))
+  .alpha(0.03)
+  .alphaMin(0.01001);
+
 
 
 function createVisualization() {
@@ -152,23 +155,33 @@ function calculateDegreesToRotate (x1,x2,y1,y2) {
 }
 
 function ticked() {
+    console.log(simulation.alpha())
     updateLinks();
     updateNodes();
 }
 
 function dragstarted(d) {
-      if (!d3.event.active) simulation.alphaTarget(.03).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
+  restartSimulation();
+  d.fx = d.x;
+  d.fy = d.y;
+}
 
-    function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
 
-    function dragended(d) {
-      if (!d3.event.active) simulation.alphaTarget(.03);
-      d.fx = null;
-      d.fy = null;
-    }
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(.01);
+  d.fx = null;
+  d.fy = null;
+}
+
+function restartSimulation() {
+  if (!d3.event.active) {
+    simulation
+    .alphaTarget(.01)
+    .alpha(0.03)
+    .restart();
+  }
+}

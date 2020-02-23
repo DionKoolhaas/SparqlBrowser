@@ -1,3 +1,11 @@
+function setDataSource(){
+    source = $("#sparqlEndpoint").val();
+    graph.nodes.forEach(function(node){
+     getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
+     getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
+    });
+}
+
 function clickNodeEvent(node, source) {
     $("#currentNodeUri").text("uri: " + node.uri);
     $("#currentNodeLabel").text("label: " + node.label);
