@@ -14,6 +14,19 @@ function clickNodeEvent(node, source) {
     getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
 }
 
+function hoverNodeEvent(node, source) {
+    $("#currentNodeUri").text("uri: " + node.uri);
+    $("#currentNodeLabel").text("label: " + node.label);
+    $("#currentNodeComment").text("comment: " +  node.comment);
+    focusNode = node;
+    ticked();
+}
+
+function mouseOutEvent() {
+    focusNode = null;
+    ticked();
+}
+
 function findData() {
     source = $("#sparqlEndpoint").val();
     var label = $("#labelInputField").val();

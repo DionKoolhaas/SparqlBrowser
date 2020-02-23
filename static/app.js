@@ -1,4 +1,6 @@
 var source = "http://localhost:8080/rdf4j-workbench/repositories/rio/query";
+var focusNode = null;
+
 //https://data.pdok.nl/sparql
 var width = 2000,
     height = 1000,
@@ -83,8 +85,12 @@ var nodes = container_nodes
                   .on("drag", dragged)
                   .on("end", dragended))
     .on("click", function(d) {
-        clickNodeEvent(d, source)
-    });
+        clickNodeEvent(d, source);
+    })
+    .on("mouseover", function(d) {
+        hoverNodeEvent(d, source);
+    })
+    .on("mouseout", mouseOutEvent);
   nodes.append('circle')
     .attr('r', circleRadius)
     .style('fill', function(d) { return color(d.bron)})
@@ -113,14 +119,40 @@ var nodes = container_nodes
 
 function updateNodes() {
     container
-        .selectAll('.node').attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        .selectAll('.node')
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+            .style('opacity', function(node) {
+
+
+        if (focusNode == null || node.uri == focusNode.uri ) {
+            return '1';
+        } else {
+            var link = graph.links.find(function(d) {
+                return (d.source.uri == node.uri && d.target.uri == focusNode.uri)
+                    || (d.target.uri == node.uri && d.source.uri == focusNode.uri) ;
+            });
+            if (link != null) {
+                return 1
+            } else {
+                return '0';
+            }
+        }
+    });
     container
         .selectAll('.node').exit().remove()
 }
 
 function updateLinks() {
    container
-       .selectAll('.link').attr("transform", function(d) { return "translate(" + d.source.x + "," + d.source.y + ")"; });
+       .selectAll('.link')
+       .attr("transform", function(d) { return "translate(" + d.source.x + "," + d.source.y + ")"; })
+            .style('opacity', function(d) {
+        if (focusNode == null || d.source.uri == focusNode.uri || d.target.uri == focusNode.uri) {
+            return '1';
+        } else {
+            return '0';
+        }
+    });
    container
        .selectAll('.line')
     .attr('x2', function(d) {
