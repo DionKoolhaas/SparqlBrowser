@@ -1,0 +1,1 @@
+gebruik maken van facet om een gegroepeerd resultaat te krijgen: http://localhost:8983/solr/mycore/select?facet.field=type&facet=on&q=*
