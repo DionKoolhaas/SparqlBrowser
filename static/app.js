@@ -2,8 +2,8 @@ var source = "http://localhost:8080/rdf4j-workbench/repositories/rio/query";
 var focusNode = null;
 
 //https://data.pdok.nl/sparql
-var width = 2000,
-    height = 1000,
+var width = 1500,
+    height = 700,
     circleRadius = 8;
 
 //stop een object in color, en je krijgt een html kleur terug

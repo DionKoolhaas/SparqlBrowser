@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <style>
+
 
 line {
   stroke: #696969;
@@ -17,32 +20,81 @@ line {
   font: 10px sans-serif;
   pointer-events: none;
 }
-
+.sidebar {
+    min-width: 450px;
+    max-width: 6000px;
+}
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
 </style>
+</head>
 <body>
-    <h1>Welcome</h1>
-    <p>Sparql endpoint</p>
-    <input type="text" id="sparqlEndpoint" name="sparqlEndpoint" value="http://localhost:8080/rdf4j-workbench/repositories/rio/query"/>
-    <button onclick="setDataSource()">Set datasource</button>
-    <p>Find label</p>
-    <input type="text" id="labelInputField" name="find label"/>
-    <button onclick="findData()">Find data</button>
-    <br/>
-    <p>compare 2 uris</p>
-    <input type="text" id="uri1" name="uri"/>
-    <input type="text" id="uri2" name="uri"/>
-    <button onclick="compareUris()">Compare</button>
-    <p id="currentNodeUri">uri: </p>
-    <p id="currentNodeLabel">label: </p>
-    <p id="currentNodeComment">comment: </p>
-    <div id=container>
+<div class="wrapper">
+    <nav class="navbar navbar-dark navbar-vertical bg-primary sidebar">
+        <div class="sidebar-header">
+            <h3>LOD browser</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li class="nav-item">
+                <div class="dropdown show">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Specificeer bron
+  </a>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <a class="dropdown-item" href="#" onclick="setDataSource('http://localhost:8080/rdf4j-workbench/repositories/rio/query')">Onderwijsregistratie</a>
+    <a class="dropdown-item" href="#" onclick="setDataSource('https://data.pdok.nl/sparql')">Basisregistraties</a>
+    <a class="dropdown-item" href="#" onclick="setDataSource('http://localhost:8080/rdf4j-workbench/repositories/ivho/query')">Onderwijsinspectie</a>
+  </div>
+</div>
+            </li>
+            <li class="nav-item">
+                <input type="text" id="labelInputField" name="find label"/>
+                <button onclick="findData()" class="btn btn-secondary">Zoeken</button>
+            </li>
+            <li class="nav-item">
+                <input type="text" id="uri1" name="uri"/>
+                <input type="text" id="uri2" name="uri"/>
+                <button onclick="compareUris()" class="btn btn-secondary">Vergelijken</button>
+            </li>
+            <br/>
+            <table class="table">
+  <tbody>
+    <tr>
+      <th scope="row">uri</th>
+      <td id="currentNodeUri"></td>
+    </tr>
+    <tr>
+      <th scope="row">label</th>
+      <td id="currentNodeLabel"></td>
+    </tr>
+    <tr>
+      <th scope="row">comment</th>
+      <td id="currentNodeComment"></td>
+    </tr>
+  </tbody>
+</table>
+
+        </ul>
+    </nav>
+    <div class="main-content">
+        <div id="container" class="container-fluid">
+        </div>
     </div>
 <script type="text/javascript" src="http://d3js.org/d3.v5.min.js"></script>
 <script
         src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 <script src="/lod-graph.js"></script>
 <script src="/app.js"></script>
 <script src="/service.js"></script>
 <script src="/sparqlClient.js"></script>
+</div>
 </body>
 </html>
+

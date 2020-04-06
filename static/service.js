@@ -1,5 +1,6 @@
-function setDataSource(){
-    source = $("#sparqlEndpoint").val();
+function setDataSource(datasource){
+    source = datasource;
+    console.log(source);
     graph.nodes.forEach(function(node){
      getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
      getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
@@ -7,17 +8,17 @@ function setDataSource(){
 }
 
 function clickNodeEvent(node, source) {
-    $("#currentNodeUri").text("uri: " + node.uri);
-    $("#currentNodeLabel").text("label: " + node.label);
-    $("#currentNodeComment").text("comment: " +  node.comment);
+    $("#currentNodeUri").text(node.uri);
+    $("#currentNodeLabel").text(node.label);
+    $("#currentNodeComment").text(node.comment);
     getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
     getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
 }
 
 function hoverNodeEvent(node, source) {
-    $("#currentNodeUri").text("uri: " + node.uri);
-    $("#currentNodeLabel").text("label: " + node.label);
-    $("#currentNodeComment").text("comment: " +  node.comment);
+    $("#currentNodeUri").text(node.uri);
+    $("#currentNodeLabel").text(node.label);
+    $("#currentNodeComment").text(node.comment);
     focusNode = node;
     ticked();
 }
@@ -28,7 +29,6 @@ function mouseOutEvent() {
 }
 
 function findData() {
-    source = $("#sparqlEndpoint").val();
     var label = $("#labelInputField").val();
     getUrisFromLabel(label, source, function(rdfData) {
         rdfData.forEach(function(triple) {
@@ -48,7 +48,6 @@ function addRdfDataToVisualizationFunction(source) {
 }
 
 function compareUris(){
-    source = $("#sparqlEndpoint").val();
     uri1 = $("#uri1").val();
     uri2 = $("#uri2").val();
     getRelationPath(uri1,uri2, source, function(rdfData) {
