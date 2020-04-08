@@ -10,7 +10,12 @@ function getDataFromSource(subjectUri, source, successCallback) {
 }
 
 function getSubjectsReferringToObject(objecttUri, source, successCallback) {
-    var query = "SELECT * WHERE { ?subject ?property <"+ objecttUri +">  } limit 10";
+    var query;
+    if (isValidUri(objecttUri)) {
+        query = "SELECT * WHERE { ?subject ?property <"+ objecttUri +">  } limit 10";
+    } else {
+        query = "SELECT * WHERE { ?subject ?property '"+ objecttUri +"'  } limit 10";
+    }
     queryDatabase(query, source, function(data) {
         var rdfData = [];
         data.results.bindings.forEach(function(triple) {

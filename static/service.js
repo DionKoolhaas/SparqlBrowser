@@ -11,12 +11,19 @@ function clickNodeEvent(node, source) {
     $("#currentNodeUri").text(node.uri);
     $("#currentNodeLabel").text(node.label);
     $("#currentNodeComment").text(node.comment);
-    getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
+    if (isValidUri(node.uri)) {
+        getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
+    }
     getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
 }
 
 function hoverNodeEvent(node, source) {
     $("#currentNodeUri").text(node.uri);
+    if (isValidUri(node.uri)) {
+        $("#currentNodeUri").attr("href",node.uri);
+    } else {
+        $("#currentNodeUri").removeAttr("href");
+    }
     $("#currentNodeLabel").text(node.label);
     $("#currentNodeComment").text(node.comment);
     focusNode = node;
@@ -29,13 +36,18 @@ function mouseOutEvent() {
 }
 
 function findData() {
-    var label = $("#labelInputField").val();
-    getUrisFromLabel(label, source, function(rdfData) {
+    var input = $("#labelInputField").val();
+    if (isValidUri(input)) {
+        getDataFromSource(input, source, addRdfDataToVisualizationFunction(source));
+        getSubjectsReferringToObject(input, source, addRdfDataToVisualizationFunction(source));
+    } else {
+    getUrisFromLabel(input, source, function(rdfData) {
         rdfData.forEach(function(triple) {
             getDataFromSource(triple.subject, source, addRdfDataToVisualizationFunction(source));
             getSubjectsReferringToObject(triple.subject, source, addRdfDataToVisualizationFunction(source));
         })
     });
+    }
 }
 
 function addRdfDataToVisualizationFunction(source) {
@@ -113,4 +125,8 @@ function findLink(triple) {
     return graph.links.find(function(d) {
         return d.source.uri == triple.subject && d.property == triple.property && d.target.uri == triple.object;
     });
+}
+
+function isValidUri(input) {
+    return /^(http|https):\/\/[^ "]+$/.test(input);
 }

@@ -33,7 +33,7 @@ line {
 </head>
 <body>
 <div class="wrapper">
-    <nav class="navbar navbar-dark navbar-vertical bg-primary sidebar">
+    <nav class="navbar navbar-vertical sidebar">
         <div class="sidebar-header">
             <h3>LOD browser</h3>
         </div>
@@ -52,8 +52,8 @@ line {
 </div>
             </li>
             <li class="nav-item">
-                <input type="text" id="labelInputField" name="find label"/>
-                <button onclick="findData()" class="btn btn-secondary">Zoeken</button>
+                <input type="text" id="labelInputField" name="find"/>
+                <button onclick="findData()" class="btn btn-primary">Zoeken</button>
             </li>
             <li class="nav-item">
                 <input type="text" id="uri1" name="uri"/>
@@ -65,15 +65,15 @@ line {
   <tbody>
     <tr>
       <th scope="row">uri</th>
-      <td id="currentNodeUri"></td>
+      <td><a id="currentNodeUri"></a></td>
     </tr>
     <tr>
       <th scope="row">label</th>
-      <td id="currentNodeLabel"></td>
+        <td><p id="currentNodeLabel"></p></td>
     </tr>
     <tr>
       <th scope="row">comment</th>
-      <td id="currentNodeComment"></td>
+        <td><p id="currentNodeComment"></p></td>
     </tr>
   </tbody>
 </table>
