@@ -1,10 +1,11 @@
 function setDataSource(datasource){
     source = datasource;
     console.log(source);
+    /*
     graph.nodes.forEach(function(node){
      getDataFromSource(node.uri, source, addRdfDataToVisualizationFunction(source));
      getSubjectsReferringToObject(node.uri, source, addRdfDataToVisualizationFunction(source));
-    });
+    });*/
 }
 
 function clickNodeEvent(node, source) {
